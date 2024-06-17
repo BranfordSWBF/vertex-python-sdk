@@ -36,7 +36,7 @@ class EngineClientOpts(BaseModel):
     book_addrs: Optional[list[str]] = None
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    @model_validator(mode='before')
+    @model_validator(mode="before")
     def check_linked_signer(cls, values: dict):
         """
         Validates that if a linked_signer is set, a signer must also be set.
@@ -67,7 +67,7 @@ class EngineClientOpts(BaseModel):
         Returns:
             str: The cleaned URL.
         """
-        return v.rstrip("/")
+        return str(v).rstrip("/")
 
     @field_validator("signer")
     @classmethod
