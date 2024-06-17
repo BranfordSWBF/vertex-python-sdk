@@ -389,6 +389,18 @@ class TxRequest(VertexBaseModel):
         v["nonce"] = str(v["nonce"])
         return v
 
+    def dict(self, *args, **kwargs):
+        import binascii
+
+        original_dict = super().dict(*args, **kwargs)
+        # Convert 'digests' from bytes to hex string if present
+        if "digests" in original_dict["tx"]:
+            original_dict["tx"]["digests"] = [
+                binascii.hexlify(digest).decode()
+                for digest in original_dict["tx"]["digests"]
+            ]
+        return original_dict
+
 
 def to_tx_request(cls: Type[VertexBaseModel], v: BaseParamsSigned) -> TxRequest:
     """
@@ -429,6 +441,18 @@ class CancelOrdersRequest(VertexBaseModel):
     """
 
     cancel_orders: CancelOrdersParams
+
+    def dict(self, **kwargs):
+        """
+        Convert model to dictionary, excluding None fields by default.
+
+        Args:
+            kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            dict: The model as a dictionary.
+        """
+        return {"cancel_orders": self.cancel_orders.dict()}
 
     @field_validator("cancel_orders")
     @classmethod
