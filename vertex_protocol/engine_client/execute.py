@@ -185,8 +185,13 @@ class EngineExecuteClient:
         res = self.session.post(f"{self.url}/execute", json=req.dict())
         if res.status_code != 200:
             raise BadStatusCodeException(res.text)
+        execute_res = None
         try:
             execute_res = ExecuteResponse(**res.json(), req=req.dict())
+        except ValidationError as e:
+            print("Validation error:", e)
+            if "success" in execute_res.status:
+                return execute_res
         except Exception:
             raise ExecuteFailedException(res.text)
         if execute_res.status != "success":
